@@ -112,15 +112,15 @@ def generate_draft(ticket: dict):
         # Build conversation context if follow-up (has responses)
         conversation = ""
         if ticket.get('responses'):
-            for r in ticket['responses'][:-5]:
+            for r in ticket['responses'][1:-5]:
                 role = "Admin (internal)" if r.get('is_internal') else ("Author" if r.get('role') == 'author' else "Admin")
                 conversation += f"\n{role}: {r['message']}\n"
         
         regenrate_draft = ticket.get('ai_draft', '')
         prompt = f"""{knowledge_base}
 
-You are a BookLeaf support representative. Generate a professional, empathetic response (150-200 words) the more short and concise the better.
-
+You are a BookLeaf support representative. Generate a professional, empathetic response (50-80 words) the more short and concise the better.
+ ** Never add placeholders, anything other than given context, assumtion(not to make any assumtion) hallucinations, etc. **
 Ticket:
 Subject: {ticket['subject']}
 Description: {ticket['description']}
