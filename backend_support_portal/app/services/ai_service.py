@@ -2,6 +2,7 @@
 import os
 import json
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,64 +11,8 @@ GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_KEY:
     client = genai.Client(api_key=GEMINI_KEY)
 
-def classify_ticket(subject: str, description: str):
-    """Classify ticket into category and priority using AI"""
-    if not GEMINI_KEY:
-        print("GEMINI_KEY not found")
-        return {"category": "General Inquiry", "priority": "Medium"}
-    
-    try:
-        prompt = f"""Classify this BookLeaf support ticket.
-
-CATEGORIES:
-1. Royalty & Payments - Payment delays, royalty amounts, payout issues
-2. ISBN & Metadata Issues - ISBN errors, duplicate ISBNs, wrong book data
-3. Printing & Quality - Print defects, binding issues, color problems
-4. Distribution & Availability - Book unavailable, platform listing issues
-5. Book Status & Production Updates - Production delays, status inquiries
-6. General Inquiry - Other questions
-
-PRIORITY RULES:
-- Critical: Missing royalties 6+ months, ISBN errors, severe quality defects
-- High: Payment delays, availability issues, production delays beyond normal
-- Medium: Status questions, metadata updates, timeline inquiries
-- Low: General info requests, minor updates
-
-Ticket:
-Subject: {subject}
-Description: {description}
-
-Respond with JSON only: {{"category": "...", "priority": "..."}}"""
-
-
-        print(f"Prompt: ", prompt)
-        
-        result = client.models.generate_content(model='gemini-3-flash-preview', contents=prompt)
-        text = result.text.strip()
-        
-        # Clean JSON response
-        if text.startswith('```json'):
-            text = text[7:-3].strip()
-        elif text.startswith('```'):
-            text = text[3:-3].strip()
-        
-        ai_result = json.loads(text)
-        return {
-            "category": ai_result.get("category", "General Inquiry"),
-            "priority": ai_result.get("priority", "Medium")
-        }
-    except Exception as e:
-        # Graceful fallback
-        return {"category": "General Inquiry", "priority": "Medium"}
-
-def generate_draft(ticket: dict):
-    """Generate AI draft response using BookLeaf Knowledge Base"""
-    if not GEMINI_KEY:
-        return "AI not configured"
-    
-    try:
-        # BookLeaf Knowledge Base (from assignment PDF)
-        knowledge_base = """
+ # BookLeaf Knowledge Base (from assignment PDF)
+knowledge_base = """
 BOOKLEAF KNOWLEDGE BASE:
 
 Royalty Policy:
@@ -104,10 +49,70 @@ Communication Tone:
 - Always end with clear next step
 """
         
+
+def classify_ticket(subject: str, description: str):
+    """Classify ticket into category and priority using AI"""
+    if not GEMINI_KEY:
+        print("GEMINI_KEY not found")
+        return {"category": "General Inquiry", "priority": "Medium"}
+    
+    try:
+        prompt = f"""Classify this BookLeaf support ticket.
+
+CATEGORIES:
+1. Royalty & Payments - Payment delays, royalty amounts, payout issues
+2. ISBN & Metadata Issues - ISBN errors, duplicate ISBNs, wrong book data
+3. Printing & Quality - Print defects, binding issues, color problems
+4. Distribution & Availability - Book unavailable, platform listing issues
+5. Book Status & Production Updates - Production delays, status inquiries
+6. General Inquiry - Other questions
+
+PRIORITY RULES:
+- Critical: Missing royalties 6+ months, ISBN errors, severe quality defects
+- High: Payment delays, availability issues, production delays beyond normal
+- Medium: Status questions, metadata updates, timeline inquiries
+- Low: General info requests, minor updates
+
+Ticket:
+Subject: {subject}
+Description: {description}
+
+Respond with JSON only: {{"category": "...", "priority": "..."}}"""
+
+        
+        result = client.models.generate_content(model='gemini-2.5-flash-lite', contents=prompt,
+                                            config=types.GenerateContentConfig(
+                                                response_mime_type="application/json"))
+        
+        text = result.text.strip()
+        
+        # Clean JSON response
+        if text.startswith('```json'):
+            text = text[7:-3].strip()
+        elif text.startswith('```'):
+            text = text[3:-3].strip()
+        
+        ai_result = json.loads(text)
+        return {
+            "category": ai_result.get("category", "General Inquiry"),
+            "priority": ai_result.get("priority", "Medium")
+        }
+    except Exception as e:
+        # Graceful fallback
+        print(f"Error: ", e)
+        return {"category": "General Inquiry", "priority": "Medium"}
+
+def generate_draft(ticket: dict):
+    """Generate AI draft response using BookLeaf Knowledge Base"""
+    if not GEMINI_KEY:
+        return "AI not configured"
+    
+    try:
+       
         # Build conversation context if follow-up (has responses)
         conversation = ""
         if ticket.get('responses'):
-            for r in ticket['responses']:
+            for r in ticket['responses'][:-5]:
                 role = "Admin (internal)" if r.get('is_internal') else ("Author" if r.get('role') == 'author' else "Admin")
                 conversation += f"\n{role}: {r['message']}\n"
         
@@ -152,7 +157,9 @@ Instructions:
 Generate the response:
 """
         
-        result = client.models.generate_content(model='gemini-3-flash-preview', contents=prompt)
+        result = client.models.generate_content(model='gemini-2.5-flash', 
+                                            contents=prompt
+                                            )
         return result.text.strip()
     except Exception as e:
         return f"Error generating draft: {str(e)}"
@@ -160,4 +167,4 @@ Generate the response:
 
 if __name__ == "__main__":
     print(classify_ticket("I haven't received my royalty payment", "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made.")) # expected output: {"category": "Royalty & Payments", "priority": "Critical"}
-    print(generate_draft({"subject": "I haven't received my royalty payment", "description": "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made."}))
+    # print(generate_draft({"subject": "I haven't received my royalty payment", "description": "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made."}))
