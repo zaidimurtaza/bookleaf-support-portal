@@ -111,15 +111,27 @@ Communication Tone:
                 role = "Admin (internal)" if r.get('is_internal') else ("Author" if r.get('role') == 'author' else "Admin")
                 conversation += f"\n{role}: {r['message']}\n"
         
+        regenrate_draft = ticket.get('ai_draft', '')
         prompt = f"""{knowledge_base}
 
-You are a BookLeaf support representative. Generate a professional, empathetic response (150-200 words).
+You are a BookLeaf support representative. Generate a professional, empathetic response (150-200 words) the more short and concise the better.
 
 Ticket:
 Subject: {ticket['subject']}
 Description: {ticket['description']}
 Category: {ticket.get('category', 'General Inquiry')}
 Priority: {ticket.get('priority', 'Medium')}
+
+ 
+"""
+        
+        if regenrate_draft:
+            prompt += f"""
+Previous response to regenerate: make a better version than it with more context and information. short and concise.
+You need to generate more better polished versionthan pevious response. |
+``
+{regenrate_draft}
+``
 """
         if conversation:
             prompt += f"""

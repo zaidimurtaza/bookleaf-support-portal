@@ -26,8 +26,8 @@ def get_ai_draft(ticket_id: str, user = Depends(require_admin)):
     if not ticket:
         return {"error": "Not found"}, 404
     
-    if ticket.get("ai_draft"):
-        return {"draft": ticket["ai_draft"]}
+    # if ticket.get("ai_draft"):
+    #     return {"draft": ticket["ai_draft"]}
     
     draft = generate_draft(ticket)
     query("UPDATE bookleaf.tickets SET ai_draft = %s WHERE ticket_id = %s", (draft, ticket_id))
