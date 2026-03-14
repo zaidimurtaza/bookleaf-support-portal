@@ -1,0 +1,12 @@
+python_env/
+__pycache__/
+.env
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+.vscode/
+.idea/
+.pytest_cache/
+.ruff_cache/
+.vscode/
+.idea/
