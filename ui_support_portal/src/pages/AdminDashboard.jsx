@@ -13,10 +13,26 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchData = async (showLoading = false) => {
+    if (showLoading) setLoading(true);
+    try {
+      const [s, t] = await Promise.all([getTicketStats(), getTickets()]);
+      setStats(s);
+      setTickets(t);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([getTicketStats(), getTickets()])
-      .then(([s, t]) => { setStats(s); setTickets(t); })
-      .finally(() => setLoading(false));
+    fetchData(true);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchData(false);
+    }, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

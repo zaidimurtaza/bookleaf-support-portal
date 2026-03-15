@@ -13,10 +13,26 @@ export default function AuthorDashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchData = async (showLoading = false) => {
+    if (showLoading) setLoading(true);
+    try {
+      const [b, t] = await Promise.all([getBooks(), getTickets()]);
+      setBooks(b);
+      setTickets(t);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([getBooks(), getTickets()])
-      .then(([b, t]) => { setBooks(b); setTickets(t); })
-      .finally(() => setLoading(false));
+    fetchData(true);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchData(false);
+    }, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

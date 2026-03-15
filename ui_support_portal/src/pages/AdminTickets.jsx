@@ -17,8 +17,8 @@ export default function AdminTickets() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const fetchTickets = async () => {
-    setLoading(true);
+  const fetchTickets = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     const filters = {};
     if (statusFilter !== "All") filters.status = statusFilter;
     if (priorityFilter !== "All") filters.priority = priorityFilter;
@@ -27,12 +27,19 @@ export default function AdminTickets() {
       setTickets(data);
     } catch {
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTickets();
+    fetchTickets(true);
+  }, [statusFilter, priorityFilter]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchTickets(false);
+    }, 20000);
+    return () => clearInterval(interval);
   }, [statusFilter, priorityFilter]);
 
   const filtered = tickets.filter((t) =>

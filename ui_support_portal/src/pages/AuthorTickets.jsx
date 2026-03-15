@@ -12,8 +12,25 @@ export default function AuthorTickets() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchTickets = async (showLoading = false) => {
+    if (showLoading) setLoading(true);
+    try {
+      const data = await getTickets();
+      setTickets(data);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    getTickets().then(setTickets).finally(() => setLoading(false));
+    fetchTickets(true);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchTickets(false);
+    }, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
