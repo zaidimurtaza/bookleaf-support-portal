@@ -56,7 +56,9 @@ export default function TicketDetail() {
   }, [ticket?.responses]);
 
   useEffect(() => {
-    const interval = setInterval(fetchTicket, 10000);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchTicket();
+    }, 10000);
     return () => clearInterval(interval);
   }, [ticketId]);
 

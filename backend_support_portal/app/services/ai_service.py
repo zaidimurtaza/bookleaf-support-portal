@@ -4,6 +4,9 @@ import json
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -53,7 +56,7 @@ Communication Tone:
 def classify_ticket(subject: str, description: str):
     """Classify ticket into category and priority using AI"""
     if not GEMINI_KEY:
-        print("GEMINI_KEY not found")
+        logger.error("GEMINI_KEY not found")
         return {"category": "General Inquiry", "priority": "Medium"}
     
     try:
@@ -99,7 +102,7 @@ Respond with JSON only: {{"category": "...", "priority": "..."}}"""
         }
     except Exception as e:
         # Graceful fallback
-        print(f"Error: ", e)
+        logger.error(f"Error: ", e)
         return {"category": "General Inquiry", "priority": "Medium"}
 
 def generate_draft(ticket: dict):
@@ -110,9 +113,14 @@ def generate_draft(ticket: dict):
     try:
        
         # Build conversation context if follow-up (has responses)
+        # Cost awareness: Pruning to 1st + last 4 messages to maintain context while minimizing token usage.
+        # This can save hundreds of tokens per API call and improves accuracy by focusing on recent context.
         conversation = ""
-        if ticket.get('responses'):
-            for r in ticket['responses'][1:-5]:
+        responses = ticket.get('responses', [])
+        if responses:
+            relevant_responses = responses[:1] + responses[-4:] if len(responses) > 5 else responses
+            
+            for r in relevant_responses:
                 role = "Admin (internal)" if r.get('is_internal') else ("Author" if r.get('role') == 'author' else "Admin")
                 conversation += f"\n{role}: {r['message']}\n"
         
@@ -166,5 +174,5 @@ Generate the response:
 
 
 if __name__ == "__main__":
-    print(classify_ticket("I haven't received my royalty payment", "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made.")) # expected output: {"category": "Royalty & Payments", "priority": "Critical"}
-    # print(generate_draft({"subject": "I haven't received my royalty payment", "description": "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made."}))
+    logger.info(classify_ticket("I haven't received my royalty payment", "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made.")) # expected output: {"category": "Royalty & Payments", "priority": "Critical"}
+    # logger.info(generate_draft({"subject": "I haven't received my royalty payment", "description": "I have not received my royalty payment for the last quarter. I have checked my bank account and it shows that the payment has not been made."}))

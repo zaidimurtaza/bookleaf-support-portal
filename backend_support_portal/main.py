@@ -6,6 +6,14 @@ from app.routes import author, admin
 from app import auth
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s :-: %(name)s :-: %(levelname)s :-: %(message)s'
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="BookLeaf API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])

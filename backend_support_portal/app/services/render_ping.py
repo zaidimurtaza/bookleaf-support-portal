@@ -38,7 +38,7 @@ def start_scheduler():
         )
         scheduler.start()
         logger.info("✓ Scheduler started successfully")
-        logger.info(f"📌 Pinging {PING_URL} every 1 minute")
+        logger.info(f"Pinging {PING_URL} every 1 minute")
     except Exception as e:
         logger.error(f"Failed to start scheduler: {e}")
 
