@@ -7,6 +7,7 @@ from app import auth
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
+from app.services.render_ping import start_scheduler
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,3 +48,4 @@ def root():
 app.include_router(admin.router, tags=["Admin"])
 app.include_router(author.router, tags=["Author"])
 
+start_scheduler()   # Start the scheduler
