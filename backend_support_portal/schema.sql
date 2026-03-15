@@ -1,13 +1,7 @@
--- BookLeaf Database Schema with explicit schema namespace
 
 -- Create schema (namespace)
 CREATE SCHEMA IF NOT EXISTS bookleaf;
 
--- Drop tables if they exist
-DROP TABLE IF EXISTS bookleaf.ticket_responses CASCADE;
-DROP TABLE IF EXISTS bookleaf.tickets CASCADE;
-DROP TABLE IF EXISTS bookleaf.books CASCADE;
-DROP TABLE IF EXISTS bookleaf.users CASCADE;
 
 -- Users table
 CREATE TABLE bookleaf.users (
