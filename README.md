@@ -2,7 +2,7 @@
 
 **Live:** [https://bookleaf-support-portal.vercel.app/](https://bookleaf-support-portal.vercel.app/)
 
-Author support portal with AI-powered ticket management. Built per [BookLeaf_Technical_Assignment_Instructions.pdf](./BookLeaf_Technical_Assignment_Instructions.pdf).
+Author support portal with AI-powered ticket management. 
 
 **Stack:** FastAPI + PostgreSQL + React + **Google Gemini API** (chosen for its generous free-tier limits).
 
@@ -49,7 +49,7 @@ cd bookleaf-support-portal
 ```bash
 cd backend_support_portal
 cp .env.example .env
-# Edit .env with your PostgreSQL credentials and GEMINI_API_KEY
+# Edit .env with your PostgreSQL credentials, GEMINI_API_KEY, JWT_SECRET
 
 pip install -r requirements.txt
 

@@ -217,7 +217,7 @@ Get a single ticket with its responses.
 
 ## 6. Get AI Draft (Admin only)
 
-Get the AI-generated draft for a ticket. Uses stored draft if available, otherwise generates a new one.
+Get the AI-generated draft for a ticket. On demand and for refresh
 
 **Endpoint:** `GET /tickets/{ticket_id}/ai-draft`
 
