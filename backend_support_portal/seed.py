@@ -13,9 +13,9 @@ def hash_password(password: str) -> str:
 
 try:
     admin_password = hash_password("admin123")
-    logger.info("✓ Data seeded! Admin password: ", admin_password)
+    logger.info("Data seeded! Admin password: ", admin_password)
 except Exception as e:
-    logger.error(f"✗ Error during seeding: {e}")
+    logger.error(f" Error during seeding: {e}")
 
 
 with open("../bookleaf_sample_data.json") as f:
@@ -35,7 +35,7 @@ for author in data["authors"]:
              book.get("royalty_paid", 0), book.get("royalty_pending", 0))
         )
 
-logger.info("✓ Data seeded!")
+logger.info(" Data seeded!")
 logger.info("\nLogin:")
 logger.info("  Admin: admin@bookleaf.com / admin123")
 logger.info("  Author: priya.sharma@email.com / password123")
