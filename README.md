@@ -49,7 +49,7 @@ cd bookleaf-support-portal
 ```bash
 cd backend_support_portal
 cp .env.example .env
-# Edit .env with your PostgreSQL credentials and GEMINI_API_KEY
+# Edit .env with your PostgreSQL credentials, GEMINI_API_KEY, JWT_SECRET
 
 pip install -r requirements.txt
 
