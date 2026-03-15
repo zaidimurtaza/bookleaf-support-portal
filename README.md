@@ -2,7 +2,7 @@
 
 **Live:** [https://bookleaf-support-portal.vercel.app/](https://bookleaf-support-portal.vercel.app/)
 
-Author support portal with AI-powered ticket management. Built per [BookLeaf_Technical_Assignment_Instructions.pdf](./BookLeaf_Technical_Assignment_Instructions.pdf).
+Author support portal with AI-powered ticket management. 
 
 **Stack:** FastAPI + PostgreSQL + React + **Google Gemini API** (chosen for its generous free-tier limits).
 
