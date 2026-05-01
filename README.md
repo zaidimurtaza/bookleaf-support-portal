@@ -5,6 +5,7 @@
 Author support portal with AI-powered ticket management. 
 
 **Stack:** FastAPI + PostgreSQL + React + **Google Gemini API** (chosen for its generous free-tier limits).
+<img width="1899" height="908" alt="image" src="https://github.com/user-attachments/assets/5be5a1e6-d861-470c-8cd2-ef316037aaed" />
 
 ---
 
